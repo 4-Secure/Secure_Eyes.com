@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .deactivate-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 20% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 50%;
+            text-align: center;
+        }
+
+        .confirm-btn {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Plan</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </table>
+
+    <!-- ... (other code) ... -->
+
+    <script>
+        // Retrieve subscribed products from localStorage
+        var subscribedProducts = JSON.parse(localStorage.getItem("subscribedProducts") || "[]");
+
+        var table = document.querySelector("table");
+
+        for (var i = 0; i < subscribedProducts.length; i++) {
+            var newRow = table.insertRow();
+            newRow.id = "product-" + i; // Assign unique ID to the row
+
+            var nameCell = newRow.insertCell(0);
+            var planCell = newRow.insertCell(1);
+            var dateCell = newRow.insertCell(2);
+            var statusCell = newRow.insertCell(3);
+            var actionsCell = newRow.insertCell(4);
+
+            nameCell.textContent = subscribedProducts[i].name;
+            planCell.textContent = subscribedProducts[i].plan;
+            dateCell.textContent = subscribedProducts[i].date;
+            statusCell.textContent = subscribedProducts[i].status;
+
+            var deactivateButton = document.createElement("button");
+            deactivateButton.textContent = "Deactivate";
+            deactivateButton.className = "deactivate-btn";
+            deactivateButton.id = "deactivate-" + i; // Assign unique ID to the button
+
+            // Attach a click event to the Deactivate button
+            deactivateButton.addEventListener("click", (function (productIndex) {
+                return function () {
+                    var row = document.getElementById("product-" + productIndex); // Get the row by ID
+
+                    // Show the confirmation modal
+                    var confirmationModal = document.getElementById("confirmationModal");
+                    confirmationModal.style.display = "block";
+
+                    // Attach event listener to "Yes" button
+                    document.getElementById("confirmYes").addEventListener("click", function () {
+                        // Remove the corresponding row from the table
+                        table.deleteRow(row.rowIndex);
+
+                        // Remove the product from the localStorage
+                        subscribedProducts.splice(productIndex, 1);
+                        localStorage.setItem("subscribedProducts", JSON.stringify(subscribedProducts));
+
+                        // Hide the confirmation modal
+                        confirmationModal.style.display = "none";
+                    });
+
+                    // Attach event listener to "No" button
+                    document.getElementById("confirmNo").addEventListener("click", function () {
+                        // Hide the confirmation modal
+                        confirmationModal.style.display = "none";
+                    });
+                };
+            })(i));
+
+            actionsCell.appendChild(deactivateButton);
+        }
+    </script>
+
+    <!-- Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure you want to deactivate this product?</p>
+            <div>
+                <button id="confirmYes" class="confirm-btn">Yes</button>
+                <button id="confirmNo" class="confirm-btn">No</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+
+<!-- Modal -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <p>Are you sure you want to deactivate this product?</p>
+        <div>
+            <button id="confirmYes" class="confirm-btn">Yes</button>
+            <button id="confirmNo" class="confirm-btn">No</button>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
